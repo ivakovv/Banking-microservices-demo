@@ -7,3 +7,10 @@ databaseChangeLog:
       file: classpath:/db/changelog/changeset/create_payment.sql
   - include:
       file: classpath:/db/changelog/changeset/create_transaction.sql
+  - changeSet:
+      id: seed-account-processing
+      author: ivakovv
+      changes:
+        - sqlFile:
+            path: classpath:/db/changelog/changeset/seed.sql
+            relativeToChangelogFile: false
