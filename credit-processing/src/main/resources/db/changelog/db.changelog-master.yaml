@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/changeset/create_product_registry.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_payment_registry.sql

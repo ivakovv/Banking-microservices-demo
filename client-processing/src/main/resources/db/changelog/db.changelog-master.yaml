@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/changeset/create_user.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_product.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_client.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_client_product.sql

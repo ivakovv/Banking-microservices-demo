@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS products (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  key VARCHAR(100) NOT NULL,
+  create_date TIMESTAMP,
+  product_id TEXT GENERATED ALWAYS AS (key || id::text) STORED UNIQUE
+);

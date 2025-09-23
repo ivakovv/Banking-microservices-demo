@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/changeset/create_account.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_card.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_payment.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_transaction.sql

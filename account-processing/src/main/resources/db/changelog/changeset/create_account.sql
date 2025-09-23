@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS accounts (
+  id BIGSERIAL PRIMARY KEY,
+  client_id BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
+  balance NUMERIC(15,2) NOT NULL DEFAULT 0,
+  interest_rate NUMERIC(5,2),
+  is_recalc BOOLEAN NOT NULL DEFAULT FALSE,
+  card_exist BOOLEAN NOT NULL DEFAULT FALSE,
+  status VARCHAR(50) NOT NULL
+);
