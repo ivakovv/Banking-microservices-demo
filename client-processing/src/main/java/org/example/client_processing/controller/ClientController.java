@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.RegistrationRequest;
 import org.example.client_processing.dto.RegistrationResponse;
-import org.example.client_processing.service.impl.ClientServiceImpl;
+import org.example.client_processing.service.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/clients")
 @RequiredArgsConstructor
 public class ClientController {
-    private final ClientServiceImpl clientService;
+    private final ClientService clientService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Клиент успешно создан"),

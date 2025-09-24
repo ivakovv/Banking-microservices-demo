@@ -9,6 +9,7 @@ import org.example.client_processing.model.Client;
 import org.example.client_processing.model.User;
 import org.example.client_processing.repository.ClientRepository;
 import org.example.client_processing.repository.UserRepository;
+import org.example.client_processing.service.BlacklistRegistryService;
 import org.example.client_processing.service.ClientService;
 import org.example.client_processing.util.ValidationUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final BlacklistRegistryService blacklistRegistryService;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
@@ -41,6 +43,12 @@ public class ClientServiceImpl implements ClientService {
         }
         if (userRepository.existsByEmail(request.user().email())) {
             throw new IllegalArgumentException("The user with email" + request.user().email() + "already exists");
+        }
+
+        if (blacklistRegistryService.isBlacklisted(request.client().documentType(), request.client().documentId())) {
+            throw new IllegalArgumentException(
+                String.format("Document %s with ID %s is blacklisted and cannot be used for registration", 
+                    request.client().documentType(), request.client().documentId()));
         }
 
         User user = userMapper.toEntity(request.user());
