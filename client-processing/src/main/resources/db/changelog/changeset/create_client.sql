@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS clients (
   id BIGSERIAL PRIMARY KEY,
   client_id VARCHAR(12) NOT NULL UNIQUE,
-  user_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL UNIQUE,
   first_name VARCHAR(255) NOT NULL,
   middle_name VARCHAR(255),
   last_name VARCHAR(255) NOT NULL,
