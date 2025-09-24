@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +45,19 @@ public class Product {
     @CreationTimestamp
     private LocalDateTime createDate;
 
-    @Column(name = "product_id", unique = true, nullable = false, insertable = false, updatable = false)
+    @Column(name = "product_id", unique = true, nullable = false)
     private String productId;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Set<ClientProduct> clientProducts = new HashSet<>();
+
+    @PostPersist
+    public void generateProductId() {
+        if (this.productId == null && this.key != null && this.id != null) {
+            this.productId = this.key.name() + this.id;
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

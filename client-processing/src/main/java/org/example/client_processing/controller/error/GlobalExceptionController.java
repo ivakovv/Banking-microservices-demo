@@ -7,6 +7,7 @@ import org.example.client_processing.exception.NotFoundException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,15 @@ public class GlobalExceptionController {
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "Not Found",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotReadable(HttpMessageNotReadableException ex) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Invalid data format",
                 ex.getMessage()
         );
     }
