@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR(255) NOT NULL,
   key VARCHAR(100) NOT NULL,
   create_date TIMESTAMP,
-  product_id TEXT GENERATED ALWAYS AS (key || id::text) STORED UNIQUE
+  product_id VARCHAR(255) UNIQUE
 );

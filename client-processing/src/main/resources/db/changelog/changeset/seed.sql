@@ -1,39 +1,39 @@
 -- Users
 INSERT INTO users (login, password, email)
-SELECT 'ivan', '{bcrypt}$2a$10$QpKZf7mQnSxK8m2mXqUeau1m6oXbN2e1yYqz7aG9h9b2Zf8mS3fKe', 'ivan55@example.com'
+SELECT 'ivan', '$2a$10$QpKZf7mQnSxK8m2mXqUeau1m6oXbN2e1yYqz7aG9h9b2Zf8mS3fKe', 'ivan55@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='ivan');
 INSERT INTO users (login, password, email)
-SELECT 'petr', '{bcrypt}$2a$10$7s3g9dQHk8Lm2PqR1TzZ9u6u0xG2s7X3pQe8YvJ4fXoZr9Lq3cK6G', 'petr.007@example.com'
+SELECT 'petr', '$2a$10$7s3g9dQHk8Lm2PqR1TzZ9u6u0xG2s7X3pQe8YvJ4fXoZr9Lq3cK6G', 'petr.007@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='petr');
 INSERT INTO users (login, password, email)
-SELECT 'sergey', '{bcrypt}$2a$10$K1mN5xC3vB8UzQ7Lh9JtHeu2rG4Wv6Yp8Sd3Qk6TzVh1Bn0Lm2yS6', 'sergey.rus@example.com'
+SELECT 'sergey', '$2a$10$K1mN5xC3vB8UzQ7Lh9JtHeu2rG4Wv6Yp8Sd3Qk6TzVh1Bn0Lm2yS6', 'sergey.rus@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='sergey');
 INSERT INTO users (login, password, email)
-SELECT 'anna', '{bcrypt}$2a$10$M9qL7nH5cV2bX8pR3tJwYeu4hL6Qo8Vx2Md5Nk7RzPf0As1Qe4iFa', 'anna@example.com'
+SELECT 'anna', '$2a$10$M9qL7nH5cV2bX8pR3tJwYeu4hL6Qo8Vx2Md5Nk7RzPf0As1Qe4iFa', 'anna@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='anna');
 INSERT INTO users (login, password, email)
-SELECT 'olga', '{bcrypt}$2a$10$B8fK2lP6qR9tW3yH7nJcXeF1gH5Jk8Lm2Nq4St6Vx9Zc1Op3Rr7Da', 'olga@example.com'
+SELECT 'olga', '$2a$10$B8fK2lP6qR9tW3yH7nJcXeF1gH5Jk8Lm2Nq4St6Vx9Zc1Op3Rr7Da', 'olga@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='olga');
 
 -- Products 
-INSERT INTO products (name, key)
-SELECT 'Debit Card', 'DC' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='DC');
-INSERT INTO products (name, key)
-SELECT 'Credit Card', 'CC' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='CC');
-INSERT INTO products (name, key)
-SELECT 'Auto Credit', 'AC' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='AC');
-INSERT INTO products (name, key)
-SELECT 'Mortgage', 'IPO' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='IPO');
-INSERT INTO products (name, key)
-SELECT 'Personal Credit', 'PC' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='PC');
-INSERT INTO products (name, key)
-SELECT 'Pension', 'PENS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='PENS');
-INSERT INTO products (name, key)
-SELECT 'Savings', 'NS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='NS');
-INSERT INTO products (name, key)
-SELECT 'Insurance', 'INS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='INS');
-INSERT INTO products (name, key)
-SELECT 'Brokerage', 'BS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='BS');
+INSERT INTO products (name, key, product_id)
+SELECT 'Debit Card', 'DC', 'DC1' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='DC');
+INSERT INTO products (name, key, product_id)
+SELECT 'Credit Card', 'CC', 'CC2' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='CC');
+INSERT INTO products (name, key, product_id)
+SELECT 'Auto Credit', 'AC', 'AC3' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='AC');
+INSERT INTO products (name, key, product_id)
+SELECT 'Mortgage', 'IPO', 'IPO4' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='IPO');
+INSERT INTO products (name, key, product_id)
+SELECT 'Personal Credit', 'PC', 'PC5' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='PC');
+INSERT INTO products (name, key, product_id)
+SELECT 'Pension', 'PENS', 'PENS6' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='PENS');
+INSERT INTO products (name, key, product_id)
+SELECT 'Savings', 'NS', 'NS7' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='NS');
+INSERT INTO products (name, key, product_id)
+SELECT 'Insurance', 'INS', 'INS8' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='INS');
+INSERT INTO products (name, key, product_id)
+SELECT 'Brokerage', 'BS', 'BS9' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='BS');
 
 -- Clients 
 WITH u AS (SELECT id FROM users WHERE login='ivan')
@@ -42,8 +42,8 @@ SELECT '770100000001', id, 'Иван','Иванович','Иванов', DATE '1
 WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id='770100000001');
 
 WITH u AS (SELECT id FROM users WHERE login='petr')
-INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, date_of_birth, document_type, document_id)
-SELECT '770200000023', id, 'Пётр','Петрович','Петров', DATE '1988-05-05','PASSPORT','4011 654321' FROM u
+INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, date_of_birth, document_type, document_id, document_prefix)
+SELECT '770200000023', id, 'Пётр','Петрович','Петров', DATE '1990-05-15','PASSPORT','123456','4010' FROM u
 WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id='770200000023');
 
 WITH u AS (SELECT id FROM users WHERE login='sergey')
