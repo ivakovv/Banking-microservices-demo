@@ -17,7 +17,7 @@ public record ClientCardEventDto(
             timestamp = LocalDateTime.now();
         }
         if (eventType == null) {
-            eventType = "CARD_CREATION_REQUEST";
+            eventType = "CLIENT_CARD_CREATED";
         }
     }
 }
