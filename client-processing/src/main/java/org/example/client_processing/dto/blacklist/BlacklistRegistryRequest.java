@@ -1,4 +1,4 @@
-package org.example.client_processing.dto;
+package org.example.client_processing.dto.blacklist;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

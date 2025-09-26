@@ -1,4 +1,4 @@
-package org.example.client_processing.dto;
+package org.example.client_processing.dto.product;
 
 import org.example.client_processing.enums.product.Key;
 import java.time.LocalDateTime;
@@ -9,3 +9,4 @@ public record ProductResponse(
         LocalDateTime createDate,
         String productId
 ) {}
+

@@ -1,8 +1,8 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.client_processing.dto.BlacklistRegistryRequest;
-import org.example.client_processing.dto.BlacklistRegistryResponse;
+import org.example.client_processing.dto.blacklist.BlacklistRegistryRequest;
+import org.example.client_processing.dto.blacklist.BlacklistRegistryResponse;
 import org.example.client_processing.enums.client.DocumentType;
 import org.example.client_processing.mapper.BlacklistRegistryMapper;
 import org.example.client_processing.model.BlacklistRegistry;

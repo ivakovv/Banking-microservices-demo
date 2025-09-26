@@ -1,7 +1,7 @@
 package org.example.client_processing.service;
 
-import org.example.client_processing.dto.BlacklistRegistryRequest;
-import org.example.client_processing.dto.BlacklistRegistryResponse;
+import org.example.client_processing.dto.blacklist.BlacklistRegistryRequest;
+import org.example.client_processing.dto.blacklist.BlacklistRegistryResponse;
 import org.example.client_processing.enums.client.DocumentType;
 
 import java.time.LocalDateTime;

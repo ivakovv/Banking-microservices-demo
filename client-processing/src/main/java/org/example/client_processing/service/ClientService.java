@@ -1,7 +1,9 @@
 package org.example.client_processing.service;
 
-import org.example.client_processing.dto.RegistrationRequest;
-import org.example.client_processing.dto.RegistrationResponse;
+import org.example.client_processing.dto.client.ClientDto;
+import org.example.client_processing.dto.client.RegistrationRequest;
+import org.example.client_processing.dto.client.RegistrationResponse;
+import org.example.client_processing.model.Client;
 
 /**
  * @author Ivakov Andrey
@@ -20,4 +22,24 @@ public interface ClientService {
      * @see  RegistrationResponse
      */
     RegistrationResponse register(RegistrationRequest request);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для получения клиента по ID</b> </i>
+     * </p>
+     * @param clientId ID клиента
+     * @return клиент
+     */
+    ClientDto getClientById(String clientId);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для получения entity клиента по ID (для внутреннего использования)</b> </i>
+     * </p>
+     * @param clientId ID клиента
+     * @return клиент entity
+     */
+    Client getClientEntityById(String clientId);
 }

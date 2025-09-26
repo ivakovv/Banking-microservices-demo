@@ -1,7 +1,8 @@
 package org.example.client_processing.service;
 
-import org.example.client_processing.dto.ProductRequest;
-import org.example.client_processing.dto.ProductResponse;
+import org.example.client_processing.dto.product.ProductRequest;
+import org.example.client_processing.dto.product.ProductResponse;
+import org.example.client_processing.model.Product;
 
 import java.util.List;
 
@@ -61,4 +62,15 @@ public interface ProductService {
      * @param productId: идентификатор продукта (key + id)
      */
     void delete(String productId);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для получения продукта по productId</b> </i>
+     * </p>
+     * @param productId ID продукта
+     * @return продукт
+     * @throws IllegalArgumentException если продукт не найден
+     */
+    Product getProductByProductId(String productId);
 }

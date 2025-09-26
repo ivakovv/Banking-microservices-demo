@@ -1,6 +1,6 @@
 package org.example.client_processing.mapper;
 
-import org.example.client_processing.dto.RegistrationRequest;
+import org.example.client_processing.dto.client.RegistrationRequest;
 import org.example.client_processing.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

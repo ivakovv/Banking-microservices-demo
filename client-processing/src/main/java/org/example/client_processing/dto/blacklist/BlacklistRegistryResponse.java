@@ -1,4 +1,4 @@
-package org.example.client_processing.dto;
+package org.example.client_processing.dto.blacklist;
 
 import org.example.client_processing.enums.client.DocumentType;
 import java.time.LocalDateTime;

@@ -1,8 +1,9 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.client_processing.dto.RegistrationRequest;
-import org.example.client_processing.dto.RegistrationResponse;
+import org.example.client_processing.dto.client.ClientDto;
+import org.example.client_processing.dto.client.RegistrationRequest;
+import org.example.client_processing.dto.client.RegistrationResponse;
 import org.example.client_processing.mapper.ClientMapper;
 import org.example.client_processing.mapper.UserMapper;
 import org.example.client_processing.model.Client;
@@ -32,6 +33,7 @@ public class ClientServiceImpl implements ClientService {
     private final PasswordEncoder passwordEncoder;
 
     private final BlacklistRegistryService blacklistRegistryService;
+
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
@@ -66,5 +68,17 @@ public class ClientServiceImpl implements ClientService {
                 savedUser.getLogin(),
                 savedUser.getEmail()
         );
+    }
+
+    @Override
+    public ClientDto getClientById(String clientId) {
+        return clientMapper.toResponse(clientRepository.findByClientId(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client with id " + clientId + " not found")));
+    }
+
+    @Override
+    public Client getClientEntityById(String clientId) {
+        return clientRepository.findByClientId(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client with id " + clientId + " not found"));
     }
 }

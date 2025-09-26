@@ -1,4 +1,4 @@
-package org.example.client_processing.dto;
+package org.example.client_processing.dto.client;
 
 public record RegistrationResponse(
         Long userId,
