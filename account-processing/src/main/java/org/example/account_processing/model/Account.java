@@ -32,10 +32,10 @@ public class Account {
     private Long id;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    private String clientId;
 
     @Column(name = "product_id", nullable = false)
-    private Long productId;
+    private String productId;
 
     @Column(name = "balance", nullable = false, precision = 15, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
