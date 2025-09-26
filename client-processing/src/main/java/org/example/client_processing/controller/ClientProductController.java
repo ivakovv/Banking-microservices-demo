@@ -24,9 +24,8 @@ public class ClientProductController {
     @PostMapping("/client/{clientId}/product/{productId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Продукт клиента успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Неверный формат данных или нарушение бизнес-правил"),
-            @ApiResponse(responseCode = "404", description = "Клиент или продукт не найден"),
-            @ApiResponse(responseCode = "409", description = "Продукт уже выдан клиенту или другому клиенту")
+            @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
+            @ApiResponse(responseCode = "404", description = "Клиент или продукт не найден")
     })
     public ResponseEntity<ClientProductResponse> createClientProduct(
             @PathVariable("clientId") String clientId,

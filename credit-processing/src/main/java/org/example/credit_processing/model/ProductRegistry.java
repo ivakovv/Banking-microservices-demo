@@ -31,13 +31,13 @@ public class ProductRegistry {
     private Long id;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    private String clientId;
 
     @Column(name = "account_id", nullable = false)
     private Long accountId;
 
     @Column(name = "product_id", nullable = false)
-    private Long productId;
+    private String productId;
 
     @Column(name = "interest_rate", nullable = false, precision = 5, scale = 2)
     private BigDecimal interestRate;

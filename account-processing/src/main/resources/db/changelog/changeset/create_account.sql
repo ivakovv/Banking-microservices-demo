@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS accounts (
   id BIGSERIAL PRIMARY KEY,
-  client_id BIGINT NOT NULL,
-  product_id BIGINT NOT NULL,
+  client_id VARCHAR(12) NOT NULL,
+  product_id VARCHAR(255) NOT NULL,
   balance NUMERIC(15,2) NOT NULL DEFAULT 0,
   interest_rate NUMERIC(5,2),
   is_recalc BOOLEAN NOT NULL DEFAULT FALSE,
