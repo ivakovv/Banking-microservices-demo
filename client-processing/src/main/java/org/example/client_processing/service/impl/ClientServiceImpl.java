@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.client.ClientDto;
 import org.example.client_processing.dto.client.RegistrationRequest;
 import org.example.client_processing.dto.client.RegistrationResponse;
+import org.example.client_processing.exception.NotFoundException;
 import org.example.client_processing.mapper.ClientMapper;
 import org.example.client_processing.mapper.UserMapper;
 import org.example.client_processing.model.Client;
@@ -73,12 +74,12 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDto getClientById(String clientId) {
         return clientMapper.toResponse(clientRepository.findByClientId(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client with id " + clientId + " not found")));
+                .orElseThrow(() -> new NotFoundException("Client with id " + clientId + " not found")));
     }
 
     @Override
     public Client getClientEntityById(String clientId) {
         return clientRepository.findByClientId(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client with id " + clientId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Client with id " + clientId + " not found"));
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.client_product.ClientProductEventDto;
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
+import org.example.client_processing.exception.NotFoundException;
 import org.example.client_processing.kafka.ClientProductEventProducer;
 import org.example.client_processing.mapper.ClientProductEventMapper;
 import org.example.client_processing.mapper.ClientProductMapper;
@@ -67,7 +68,7 @@ public class ClientProductServiceImpl implements ClientProductService {
     @Override
     public ClientProductResponse getByClientIdAndProductId(String clientId, String productId) {
         ClientProduct clientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
-                .orElseThrow(() -> new IllegalArgumentException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
         return clientProductMapper.toResponse(clientProduct);
     }
 
@@ -90,7 +91,7 @@ public class ClientProductServiceImpl implements ClientProductService {
     @Override
     public ClientProductResponse updateByClientIdAndProductId(String clientId, String productId, ClientProductRequest request) {
         ClientProduct existingClientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
-                .orElseThrow(() -> new IllegalArgumentException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
 
         existingClientProduct.setOpenDate(request.openDate());
         existingClientProduct.setCloseDate(request.closeDate());
@@ -108,7 +109,7 @@ public class ClientProductServiceImpl implements ClientProductService {
     @Override
     public void deleteByClientIdAndProductId(String clientId, String productId) {
         ClientProduct clientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
-                .orElseThrow(() -> new IllegalArgumentException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
 
         ClientProductEventDto event = clientProductEventMapper.toDeletedEvent(clientProduct);
         clientProductEventProducer.sendClientProductEvent(event);

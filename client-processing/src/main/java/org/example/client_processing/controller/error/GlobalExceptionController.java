@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.client_processing.dto.error.ErrorResponseDto;
 import org.example.client_processing.exception.NotFoundException;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,7 +20,7 @@ public class GlobalExceptionController {
         return new ResponseEntity<>(errorResponse, e.getStatusCode());
     }
 
-    @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFound(NotFoundException ex) {
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,

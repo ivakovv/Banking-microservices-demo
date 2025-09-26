@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.blacklist.BlacklistRegistryRequest;
 import org.example.client_processing.dto.blacklist.BlacklistRegistryResponse;
 import org.example.client_processing.enums.client.DocumentType;
+import org.example.client_processing.exception.NotFoundException;
 import org.example.client_processing.mapper.BlacklistRegistryMapper;
 import org.example.client_processing.model.BlacklistRegistry;
 import org.example.client_processing.repository.BlacklistRegistryRepository;
@@ -44,8 +45,8 @@ public class BlacklistRegistryServiceImpl implements BlacklistRegistryService {
     public void deleteFromBlackList(String documentId) {
         BlacklistRegistry blacklistRegistry = blacklistRegistryRepository
                 .findByDocumentId(documentId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                "Document with id" + documentId + " is already in blacklist"));
+                .orElseThrow(() -> new NotFoundException(
+                "Document with id" + documentId + " is not found in blacklist"));
         
         blacklistRegistryRepository.delete(blacklistRegistry);
     }
@@ -55,8 +56,8 @@ public class BlacklistRegistryServiceImpl implements BlacklistRegistryService {
     public BlacklistRegistryResponse changeExpirationDate(String documentId, LocalDateTime expirationDate) {
         BlacklistRegistry blacklistRegistry = blacklistRegistryRepository
                 .findByDocumentId(documentId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Document with id" + documentId + " is already in blacklist"));
+                .orElseThrow(() -> new NotFoundException(
+                        "Document with id" + documentId + " is not found in blacklist"));
         
         blacklistRegistry.setBlacklistExpirationDate(expirationDate);
         BlacklistRegistry updatedRegistry = blacklistRegistryRepository.save(blacklistRegistry);
@@ -68,7 +69,7 @@ public class BlacklistRegistryServiceImpl implements BlacklistRegistryService {
     public BlacklistRegistryResponse getBlacklistRegistry(String documentId) {
         BlacklistRegistry blacklistRegistry = blacklistRegistryRepository
                 .findByDocumentId(documentId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new NotFoundException(
                     "Document with ID" + documentId + " is not found in blacklist"));
         
         return blacklistRegistryMapper.toResponse(blacklistRegistry);

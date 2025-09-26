@@ -3,6 +3,7 @@ package org.example.client_processing.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.product.ProductRequest;
 import org.example.client_processing.dto.product.ProductResponse;
+import org.example.client_processing.exception.NotFoundException;
 import org.example.client_processing.mapper.ProductMapper;
 import org.example.client_processing.model.Product;
 import org.example.client_processing.repository.ProductRepository;
@@ -31,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getByProductId(String productId) {
         Product product = productRepository.findByProductId(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product with productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Product with productId " + productId + " not found"));
         return productMapper.toResponse(product);
     }
 
@@ -53,14 +54,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void delete(String productId) {
         Product product = productRepository.findByProductId(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product with productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Product with productId " + productId + " not found"));
         productRepository.delete(product);
     }
 
     @Override
     public Product getProductByProductId(String productId) {
         return productRepository.findByProductId(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product with productId " + productId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Product with productId " + productId + " not found"));
     }
 
 }
