@@ -2,6 +2,8 @@ package org.example.client_processing.service;
 
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
+import org.example.client_processing.dto.client_product.ReleaseCardRequest;
+import org.example.client_processing.dto.client_product.ReleaseCardResponse;
 
 import java.util.List;
 
@@ -83,4 +85,18 @@ public interface ClientProductService {
      * @param productId ID продукта
      */
     void deleteByClientIdAndProductId(String clientId, String productId);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для заявки выпуска карты </b> </i>
+     * </p>
+     * @param clientId ID клиента
+     * @param request dto заявки для выпуска карты
+     * @see ReleaseCardRequest
+     * @return время и сообщение по заявке
+     * @see ReleaseCardResponse
+     */
+    ReleaseCardResponse releaseCard(String clientId, ReleaseCardRequest request);
+
 }

@@ -82,4 +82,17 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findByClientId(clientId)
                 .orElseThrow(() -> new NotFoundException("Client with id " + clientId + " not found"));
     }
+
+    @Override
+    public Client getValidatedClient(String clientId) {
+        Client client = getClientEntityById(clientId);
+        
+        if (blacklistRegistryService.isBlacklisted(client.getDocumentType(), client.getDocumentId())) {
+            throw new IllegalArgumentException(
+                    String.format("Document %s with ID %s is blacklisted",
+                            client.getDocumentType(), client.getDocumentId()));
+        }
+        
+        return client;
+    }
 }

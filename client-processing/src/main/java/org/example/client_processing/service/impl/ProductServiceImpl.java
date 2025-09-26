@@ -43,11 +43,16 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
-    //TODO сделать обновления продукта
     @Transactional
     @Override
     public ProductResponse update(String productId, ProductRequest request) {
-        return null;
+        Product existingProduct = productRepository.findByProductId(productId)
+                .orElseThrow(() -> new NotFoundException("Product with productId " + productId + " not found"));
+
+        Product updatedProduct = productMapper.updateProduct(existingProduct, request);
+        Product savedProduct = productRepository.save(updatedProduct);
+        
+        return productMapper.toResponse(savedProduct);
     }
 
     @Transactional

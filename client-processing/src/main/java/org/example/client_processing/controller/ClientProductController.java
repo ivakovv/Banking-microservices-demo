@@ -6,10 +6,19 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
+import org.example.client_processing.dto.client_product.ReleaseCardRequest;
+import org.example.client_processing.dto.client_product.ReleaseCardResponse;
 import org.example.client_processing.service.ClientProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -83,5 +92,16 @@ public class ClientProductController {
             @PathVariable("productId") String productId) {
         clientProductService.deleteByClientIdAndProductId(clientId, productId);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/client/{clientId}/product/cards")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Заявка на открытие карты успешно получена"),
+            @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
+            @ApiResponse(responseCode = "404", description = "Клиент не найден")
+    })
+    public ResponseEntity<ReleaseCardResponse> createClientProduct(
+            @PathVariable("clientId") String clientId,
+            @Valid @RequestBody ReleaseCardRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientProductService.releaseCard(clientId, request));
     }
 }

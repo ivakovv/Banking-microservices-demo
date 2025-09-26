@@ -42,4 +42,14 @@ public interface ClientService {
      * @return клиент entity
      */
     Client getClientEntityById(String clientId);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для получения валидированного клиента (включая проверку blacklist)</b> </i>
+     * </p>
+     * @param clientId ID клиента
+     * @return валидированный клиент entity
+     */
+    Client getValidatedClient(String clientId);
 }

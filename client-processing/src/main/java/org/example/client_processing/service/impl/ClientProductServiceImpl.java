@@ -1,18 +1,22 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.client_processing.dto.card.ClientCardEventDto;
 import org.example.client_processing.dto.client_product.ClientProductEventDto;
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
+import org.example.client_processing.dto.client_product.ReleaseCardRequest;
+import org.example.client_processing.dto.client_product.ReleaseCardResponse;
 import org.example.client_processing.exception.NotFoundException;
+import org.example.client_processing.kafka.ClientCardEventProducer;
 import org.example.client_processing.kafka.ClientProductEventProducer;
+import org.example.client_processing.mapper.CardMapper;
 import org.example.client_processing.mapper.ClientProductEventMapper;
 import org.example.client_processing.mapper.ClientProductMapper;
 import org.example.client_processing.model.Client;
 import org.example.client_processing.model.ClientProduct;
 import org.example.client_processing.model.Product;
 import org.example.client_processing.repository.ClientProductRepository;
-import org.example.client_processing.service.BlacklistRegistryService;
 import org.example.client_processing.service.ClientProductService;
 import org.example.client_processing.service.ClientService;
 import org.example.client_processing.service.ProductService;
@@ -31,17 +35,13 @@ public class ClientProductServiceImpl implements ClientProductService {
     private final ClientService clientService;
     private final ProductService productService;
     private final ClientProductEventProducer clientProductEventProducer;
-    private final BlacklistRegistryService blacklistRegistryService;
+    private final ClientCardEventProducer clientCardEventProducer;
+    private final CardMapper cardMapper;
 
     @Transactional
     @Override
     public ClientProductResponse create(String clientId, String productId, ClientProductRequest request) {
-        Client client = clientService.getClientEntityById(clientId);
-        if (blacklistRegistryService.isBlacklisted(client.getDocumentType(), client.getDocumentId())) {
-            throw new IllegalArgumentException(
-                    String.format("Document %s with ID %s is blacklisted",
-                            client.getDocumentType(), client.getDocumentId()));
-        }
+        Client client = clientService.getValidatedClient(clientId);
 
         Product product = productService.getProductByProductId(productId);
 
@@ -115,5 +115,16 @@ public class ClientProductServiceImpl implements ClientProductService {
         clientProductEventProducer.sendClientProductEvent(event);
 
         clientProductRepository.delete(clientProduct);
+    }
+
+    @Override
+    public ReleaseCardResponse releaseCard(String clientId, ReleaseCardRequest request) {
+        Client client = clientService.getValidatedClient(clientId);
+
+        ClientCardEventDto cardEvent = cardMapper.toClientCardEvent(client, request);
+
+        clientCardEventProducer.sendCardCreationRequest(cardEvent);
+
+        return cardMapper.toResponse("Заявка на создание карты принята в обработку");
     }
 }
