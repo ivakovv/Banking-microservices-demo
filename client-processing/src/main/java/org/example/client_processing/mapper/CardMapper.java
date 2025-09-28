@@ -19,7 +19,7 @@ public interface CardMapper {
     @Mapping(target = "clientId", source = "client.clientId")
     @Mapping(target = "accountId", source = "request.accountId")
     @Mapping(target = "paymentSystem", source = "request.paymentSystem")
-    @Mapping(target = "timestamp", ignore = true) 
-    @Mapping(target = "eventType", ignore = true)
+    @Mapping(target = "timestamp", ignore = true)
+    @Mapping(target = "eventType", constant = "CLIENT_CARD_CREATED")
     ClientCardEventDto toClientCardEvent(Client client, ReleaseCardRequest request);
 }

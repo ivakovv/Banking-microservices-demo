@@ -15,7 +15,7 @@ INSERT INTO users (login, password, email)
 SELECT 'olga', '{bcrypt}$2a$10$B8fK2lP6qR9tW3yH7nJcXeF1gH5Jk8Lm2Nq4St6Vx9Zc1Op3Rr7Da', 'olga@example.com'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE login='olga');
 
--- Products 
+-- Products
 INSERT INTO products (name, key)
 SELECT 'Debit Card', 'DC' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='DC');
 INSERT INTO products (name, key)
@@ -35,7 +35,7 @@ SELECT 'Insurance', 'INS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='IN
 INSERT INTO products (name, key)
 SELECT 'Brokerage', 'BS' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='BS');
 
--- Clients 
+-- Clients
 WITH u AS (SELECT id FROM users WHERE login='ivan')
 INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, date_of_birth, document_type, document_id, document_prefix)
 SELECT '770100000001', id, 'Иван','Иванович','Иванов', DATE '1990-01-01','PASSPORT','4010 123456','AB' FROM u
@@ -61,7 +61,7 @@ INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, dat
 SELECT '770100000008', id, 'Ольга','Петровна','Кузнецова', DATE '1985-11-11','BIRTH_CERT','VIII-000111' FROM u
 WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id='770100000008');
 
--- ClientProduct 
+-- ClientProduct
 INSERT INTO client_product (client_id, product_id, open_date, status)
 SELECT c.id, p.id, NOW(), 'ACTIVE'
 FROM clients c, products p

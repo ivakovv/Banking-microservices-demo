@@ -8,6 +8,7 @@ import org.example.account_processing.model.Account;
 import org.example.account_processing.model.Card;
 import org.example.account_processing.mapper.AccountMapper;
 import org.example.account_processing.mapper.CardMapper;
+import org.example.account_processing.service.AccountService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,6 +22,7 @@ public class EventProcessor {
 
     private final AccountMapper accountMapper;
     private final CardMapper cardMapper;
+    private final AccountService accountService;
 
     public Account processClientProductEvent(ClientProductEventDto event) {
         log.info("Processing client product event: {}", event);
@@ -37,11 +39,20 @@ public class EventProcessor {
 
     public Card processClientCardEvent(ClientCardEventDto event) {
         log.info("Processing client card event: {}", event);
-        
+
         String eventType = event.eventType();
-        
+
         if ("CLIENT_CARD_CREATED".equals(eventType)) {
-            return cardMapper.toEntity(event);
+            Card card = cardMapper.toEntity(event);
+
+            Account account = accountService.findById(event.accountId());
+            if (account == null) {
+                log.error("Account not found with id: {}", event.accountId());
+                return null;
+            }
+            card.setAccount(account);
+
+            return card;
         } else {
             log.info("Skipping event type: {}", eventType);
             return null;
