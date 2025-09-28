@@ -1,4 +1,4 @@
--- Accounts 
+-- Accounts
 INSERT INTO accounts (client_id, product_id, balance, interest_rate, is_recalc, card_exist, status)
 SELECT '770100000001', 'DC1', 0, NULL, FALSE, FALSE, 'ACTIVE'
 WHERE NOT EXISTS (SELECT 1 FROM accounts a WHERE a.client_id = '770100000001' AND a.product_id = 'DC1');
@@ -40,4 +40,3 @@ SELECT a.id, c.id, 'DEPOSIT', 500.00, 'COMPLETE', NOW()
 FROM accounts a
 LEFT JOIN cards c ON c.account_id = a.id
 WHERE NOT EXISTS (SELECT 1 FROM transactions t WHERE t.account_id = a.id);
-

@@ -35,7 +35,7 @@ SELECT 'Insurance', 'INS', 'INS8' WHERE NOT EXISTS (SELECT 1 FROM products WHERE
 INSERT INTO products (name, key, product_id)
 SELECT 'Brokerage', 'BS', 'BS9' WHERE NOT EXISTS (SELECT 1 FROM products WHERE key='BS');
 
--- Clients 
+-- Clients
 WITH u AS (SELECT id FROM users WHERE login='ivan')
 INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, date_of_birth, document_type, document_id, document_prefix)
 SELECT '770100000001', id, 'Иван','Иванович','Иванов', DATE '1990-01-01','PASSPORT','4010 123456','AB' FROM u
@@ -61,7 +61,7 @@ INSERT INTO clients (client_id, user_id, first_name, middle_name, last_name, dat
 SELECT '770100000008', id, 'Ольга','Петровна','Кузнецова', DATE '1985-11-11','BIRTH_CERT','VIII-000111' FROM u
 WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id='770100000008');
 
--- ClientProduct 
+-- ClientProduct
 INSERT INTO client_product (client_id, product_id, open_date, status)
 SELECT c.id, p.id, NOW(), 'ACTIVE'
 FROM clients c, products p

@@ -1,6 +1,5 @@
 package org.example.client_processing.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter

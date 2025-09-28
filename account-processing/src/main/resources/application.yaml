@@ -23,6 +23,37 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
+  kafka:
+    topics:
+      client-products: client_products
+      client-cards: client_cards
+      client-transactions: client_transactions
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: account-processing-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 3
+      acks: all
+      enable-idempotence: true
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      retry-backoff-ms: 1000
+      compression-type: snappy
+
+account-processing:
+  kafka:
+    consumer:
+      enable: true
 
 logging:
   level:
