@@ -7,6 +7,7 @@ import org.example.account_processing.model.Card;
 import org.example.account_processing.service.CardService;
 import org.example.account_processing.util.EventProcessor;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,7 +22,9 @@ public class ClientCardEventConsumer {
     private final CardService cardService;
 
     @KafkaListener(topics = "${spring.kafka.topics.client-cards}", groupId = "${spring.kafka.consumer.group-id}")
-    public void handleClientCardEvent(@Payload ClientCardEventDto event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+    public void handleClientCardEvent(@Payload ClientCardEventDto event, 
+                                    @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                                    Acknowledgment ack) {
         try {
             log.info("Received client card event from topic {}: {}", topic, event);
             
@@ -31,6 +34,10 @@ public class ClientCardEventConsumer {
                 cardService.createCard(card);
                 log.info("Successfully processed client card event");
             }
+            
+            ack.acknowledge();
+            log.debug("Message acknowledged for client card event");
+            
         } catch (Exception e) {
             log.error("Failed to process client card event: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to process client card event", e);

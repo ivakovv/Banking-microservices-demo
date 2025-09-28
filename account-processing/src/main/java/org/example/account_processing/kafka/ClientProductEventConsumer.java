@@ -7,6 +7,7 @@ import org.example.account_processing.model.Account;
 import org.example.account_processing.service.AccountService;
 import org.example.account_processing.util.EventProcessor;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,7 +22,9 @@ public class ClientProductEventConsumer {
     private final AccountService accountService;
 
     @KafkaListener(topics = "${spring.kafka.topics.client-products}", groupId = "${spring.kafka.consumer.group-id}")
-    public void handleClientProductEvent(@Payload ClientProductEventDto event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+    public void handleClientProductEvent(@Payload ClientProductEventDto event, 
+                                       @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                                       Acknowledgment ack) {
         try {
             log.info("Received client product event from topic {}: {}", topic, event);
             
@@ -31,6 +34,10 @@ public class ClientProductEventConsumer {
                 accountService.createAccount(account);
                 log.info("Successfully processed client product event");
             }
+            
+            ack.acknowledge();
+            log.debug("Message acknowledged for client product event");
+            
         } catch (Exception e) {
             log.error("Failed to process client product event: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to process client product event", e);
