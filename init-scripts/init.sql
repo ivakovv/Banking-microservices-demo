@@ -1,0 +1,9 @@
+CREATE DATABASE client_db;
+CREATE DATABASE account_db;
+CREATE DATABASE credit_db;
+
+CREATE SCHEMA IF NOT EXISTS client_schema;
+
+CREATE SCHEMA IF NOT EXISTS account_schema;
+
+CREATE SCHEMA IF NOT EXISTS credit_schema;

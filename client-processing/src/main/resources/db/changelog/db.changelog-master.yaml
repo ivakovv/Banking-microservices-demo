@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/changeset/create_user.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_product.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_client.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_client_product.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_blacklist_registry.sql
+  - changeSet:
+      id: seed-client-processing
+      author: ivakovv
+      changes:
+        - sqlFile:
+            path: classpath:/db/changelog/changeset/seed.sql
+            relativeToChangelogFile: false
