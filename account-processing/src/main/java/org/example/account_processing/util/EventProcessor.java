@@ -50,6 +50,11 @@ public class EventProcessor {
                 log.error("Account not found with id: {}", event.accountId());
                 return null;
             }
+            if (!event.clientId().equals(account.getClientId())) {
+                log.error("Client ID mismatch: event clientId={}, account clientId={}",
+                        event.clientId(), account.getClientId());
+                return null;
+            }
             card.setAccount(account);
 
             return card;

@@ -42,6 +42,12 @@ public class ProductRegistry {
     @Column(name = "interest_rate", nullable = false, precision = 5, scale = 2)
     private BigDecimal interestRate;
 
+    @Column(name = "month_count", nullable = false)
+    private Short monthCount;
+
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount;
+
     @Column(name = "open_date", nullable = false)
     private LocalDateTime openDate;
 
