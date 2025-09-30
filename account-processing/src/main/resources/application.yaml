@@ -28,6 +28,7 @@ spring:
       client-products: client_products
       client-cards: client_cards
       client-transactions: client_transactions
+      client-payments: client_payments
     bootstrap-servers: localhost:9092
     consumer:
       group-id: account-processing-group
@@ -49,6 +50,11 @@ spring:
       buffer-memory: 33554432
       retry-backoff-ms: 1000
       compression-type: snappy
+
+transaction:
+  limits:
+    max-transactions: 10
+    time-window-minutes: 60
 
 account-processing:
   kafka:

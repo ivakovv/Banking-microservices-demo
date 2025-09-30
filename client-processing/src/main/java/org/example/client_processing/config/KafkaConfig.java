@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.example.client_processing.dto.card.ClientCardEventDto;
+import org.example.client_processing.dto.client_product.ClientCreditProductEventDto;
 import org.example.client_processing.dto.client_product.ClientProductEventDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -123,6 +124,44 @@ public class KafkaConfig {
         return template;
     }
 
+    @Bean("clientCreditProductEventProducerFactory")
+    public ProducerFactory<String, ClientCreditProductEventDto> clientCreditProductEventProducerFactory() {
+        Map<String, Object> configProps = new HashMap<>();
+
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        configProps.put(ProducerConfig.ACKS_CONFIG, acks);
+        configProps.put(ProducerConfig.RETRIES_CONFIG, retries);
+        configProps.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, retryBackoffMs);
+        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
+
+        configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+        configProps.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
+        configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, bufferMemory);
+
+        configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+
+        log.info("Creating Kafka Producer Factory for Credit Products with servers: {}, idempotence: {}, retries: {}",
+                bootstrapServers, enableIdempotence, retries);
+
+        return new DefaultKafkaProducerFactory<>(configProps);
+    }
+
+    @Bean("clientCreditProductEventTemplate")
+    public KafkaTemplate<String, ClientCreditProductEventDto> clientCreditProductEventKafkaTemplate(
+            @Qualifier("clientCreditProductEventProducerFactory") ProducerFactory<String, ClientCreditProductEventDto> producerFactory) {
+
+        KafkaTemplate<String, ClientCreditProductEventDto> template = new KafkaTemplate<>(producerFactory);
+
+        template.setDefaultTopic(clientCreditProductsTopic);
+
+        log.info("Created Credit Product KafkaTemplate with default topic: {}", clientCreditProductsTopic);
+
+        return template;
+    }
+
     @Bean
     @ConditionalOnProperty(
             value = "client-processing.kafka.producer.enable",
@@ -131,7 +170,7 @@ public class KafkaConfig {
     )
     public String kafkaProducerStatus() {
         log.info("Kafka Producer is ENABLED for client-processing service");
-        log.info("Available topics: client-products={}, client-credit-products={}, client-cards={}", 
+        log.info("Available topics: client-products={}, client-credit-products={}, client-cards={}",
                 clientProductsTopic, clientCreditProductsTopic, clientCardsTopic);
         return "ENABLED";
     }
