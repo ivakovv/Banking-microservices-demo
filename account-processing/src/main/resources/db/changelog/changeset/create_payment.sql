@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS payments (
   amount NUMERIC(15,2) NOT NULL,
   is_credit BOOLEAN NOT NULL,
   payed_at TIMESTAMP,
+  expired BOOLEAN NOT NULL DEFAULT FALSE,
   type VARCHAR(100) NOT NULL,
   CONSTRAINT fk_payments_account FOREIGN KEY (account_id) REFERENCES accounts(id)
 );

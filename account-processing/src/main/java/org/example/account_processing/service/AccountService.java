@@ -53,4 +53,14 @@ public interface AccountService {
      */
     AccountDto getAccountByClientAndProductId(String ClientId, String productId);
 
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод проверяет счет на блокировку оперций </b> </i>
+     * </p>
+     * @param account счет для проверки
+     * @return булево значение
+     */
+    boolean isAccountActive(Account account);
+
 }

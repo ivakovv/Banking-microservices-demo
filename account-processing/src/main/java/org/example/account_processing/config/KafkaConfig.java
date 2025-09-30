@@ -35,6 +35,9 @@ public class KafkaConfig {
     
     @Value("${spring.kafka.topics.client-transactions}")
     private String clientTransactionsTopic;
+    
+    @Value("${spring.kafka.topics.client-payments}")
+    private String clientPaymentsTopic;
 
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
@@ -138,8 +141,8 @@ public class KafkaConfig {
     )
     public String kafkaConsumerStatus() {
         log.info("Kafka Consumer is ENABLED for account-processing service");
-        log.info("Available topics: client-products={}, client-cards={}, client-transactions={}", 
-                clientProductsTopic, clientCardsTopic, clientTransactionsTopic);
+        log.info("Available topics: client-products={}, client-cards={}, client-transactions={}, client-payments={}", 
+                clientProductsTopic, clientCardsTopic, clientTransactionsTopic, clientPaymentsTopic);
         return "ENABLED";
     }
 }

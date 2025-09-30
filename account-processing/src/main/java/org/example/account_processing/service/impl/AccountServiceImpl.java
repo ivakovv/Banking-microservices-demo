@@ -3,6 +3,7 @@ package org.example.account_processing.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.account_processing.dto.account.AccountDto;
+import org.example.account_processing.enums.Status;
 import org.example.account_processing.mapper.AccountMapper;
 import org.example.account_processing.model.Account;
 import org.example.account_processing.repository.AccountRepository;
@@ -62,4 +63,11 @@ public class AccountServiceImpl implements AccountService {
         }
         return accountMapper.toDto(account);
     }
+
+    @Override
+    public boolean isAccountActive(Account account){
+        return account.getStatus() != Status.CLOSED
+                && account.getStatus() != Status.ARRESTED && account.getStatus() != Status.FROZEN;
+    }
+
 }
