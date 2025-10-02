@@ -29,6 +29,7 @@ spring:
       client-cards: client_cards
       client-transactions: client_transactions
       client-payments: client_payments
+      service-logs: service_logs
     bootstrap-servers: localhost:9092
     consumer:
       group-id: account-processing-group

@@ -27,6 +27,7 @@ spring:
     topics:
       client-credit-products: client_credit_products
       client-credit-products-dlq: client_credit_products_dlq
+      service-logs: service_logs
     bootstrap-servers: localhost:9092
     consumer:
       group-id: credit-processing-group

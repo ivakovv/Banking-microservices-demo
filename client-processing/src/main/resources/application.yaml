@@ -28,6 +28,7 @@ spring:
       client-products: client_products
       client-credit-products: client_credit_products
       client-cards: client_cards
+      service-logs: service_logs
     bootstrap-servers: localhost:9092
     consumer:
       group-id: client-processing-group

@@ -29,6 +29,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.topics.client-credit-products}")
     private String clientCreditProductsTopic;
 
+    @Value("${spring.kafka.topics.service-logs}")
+    private String serviceLogsTopic;
+
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
@@ -126,7 +129,9 @@ public class KafkaConfig {
     @Bean
     public String kafkaConsumerStatus() {
         log.info("Kafka Consumer is ENABLED for credit-processing service");
-        log.info("Available topics: client-credit-products={}", clientCreditProductsTopic);
+        log.info("Available topics:");
+        log.info("  - client-credit-products: {}", clientCreditProductsTopic);
+        log.info("  - service-logs: {}", serviceLogsTopic);
         return "ENABLED";
     }
 }

@@ -1,6 +1,7 @@
 package org.example.credit_processing.service.info;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.credit_processing.annotation.LogDatasourceError;
 import org.example.credit_processing.component.BaseHttpClient;
 import org.example.credit_processing.dto.ClientInfoDto;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,8 @@ public class ClientInfoService extends BaseHttpClient {
         super(restTemplate, clientServiceUrl);
     }
 
+    @LogDatasourceError(level = LogDatasourceError.LogLevel.ERROR, 
+                        description = "Failed to retrieve client information from client-processing service")
     public ClientInfoDto getClientInfo(String clientId) {
         log.info("Making GET request to client-processing: {}", baseUrl);
         ClientInfoDto clientInfo = get("/clients/" + clientId, ClientInfoDto.class);
