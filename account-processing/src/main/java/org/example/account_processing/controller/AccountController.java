@@ -3,6 +3,7 @@ package org.example.account_processing.controller;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.example.account_processing.annotation.HttpIncomeRequestLog;
 import org.example.account_processing.dto.account.AccountDto;
 import org.example.account_processing.service.AccountService;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,11 @@ public class AccountController {
             @ApiResponse(responseCode = "503", description = "Сервис не отвечает")
     })
     @GetMapping("/clients/{clientId}/products/{productId}")
+    @HttpIncomeRequestLog(
+        httpMethod = "GET", 
+        uri = "/accounts/clients/{clientId}/products/{productId}",
+        description = "Incoming request to get account by client and product"
+    )
     public ResponseEntity<AccountDto> getAccountByProductId(
             @PathVariable("clientId") String clientId,
             @PathVariable("productId") String productId){

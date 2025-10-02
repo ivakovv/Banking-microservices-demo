@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.client_processing.annotation.HttpIncomeRequestLog;
+import org.example.client_processing.annotation.HttpOutcomeRequestLog;
 import org.example.client_processing.dto.client.ClientDto;
 import org.example.client_processing.dto.client.RegistrationRequest;
 import org.example.client_processing.dto.client.RegistrationResponse;
@@ -30,6 +32,11 @@ public class ClientController {
             @ApiResponse(responseCode = "503", description = "Сервис не отвечает")
     })
     @PostMapping("/register")
+    @HttpOutcomeRequestLog(
+        httpMethod = "POST", 
+        uri = "/clients/register",
+        description = "Successfully registered new client"
+    )
     public ResponseEntity<RegistrationResponse> registerClient(@Valid @RequestBody RegistrationRequest registrationRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.register(registrationRequest));
     }
@@ -41,6 +48,11 @@ public class ClientController {
             @ApiResponse(responseCode = "503", description = "Сервис не отвечает")
     })
     @GetMapping("/{clientId}")
+    @HttpIncomeRequestLog(
+        httpMethod = "GET", 
+        uri = "/clients/{clientId}",
+        description = "Incoming request to get client information"
+    )
     public ResponseEntity<ClientDto> getClient(@PathVariable("clientId") String clientId){
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.getClientById(clientId));
     }
