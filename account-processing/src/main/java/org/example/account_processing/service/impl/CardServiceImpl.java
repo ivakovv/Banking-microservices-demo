@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.account_processing.enums.Status;
 import org.example.account_processing.model.Account;
 import org.example.account_processing.model.Card;
+
+import java.util.List;
 import org.example.account_processing.repository.CardRepository;
 import org.example.account_processing.service.AccountService;
 import org.example.account_processing.service.CardService;
@@ -49,5 +51,21 @@ public class CardServiceImpl implements CardService {
                 savedCard.getId(), account.getId(), savedCard.getCardId(), savedCard.getPaymentSystem());
         
         return savedCard;
+    }
+
+    @Override
+    public Card findById(String cardId) {
+        return cardRepository.findByCardId(cardId).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public Card saveCard(Card card) {
+        return cardRepository.save(card);
+    }
+
+    @Override
+    public List<Card> findByAccountId(Long accountId) {
+        return cardRepository.findByAccountId(accountId);
     }
 }
