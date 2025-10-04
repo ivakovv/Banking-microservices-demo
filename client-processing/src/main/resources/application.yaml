@@ -55,6 +55,9 @@ client-processing:
   kafka:
     producer:
       enable: true
+  metric:
+    execution-time-limit-ms: 1  
+
 
 logging:
   level:
