@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.client_processing.annotation.Metric;
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
 import org.example.client_processing.dto.client_product.ReleaseCardRequest;
@@ -93,6 +94,8 @@ public class ClientProductController {
         clientProductService.deleteByClientIdAndProductId(clientId, productId);
         return ResponseEntity.noContent().build();
     }
+
+    @Metric(description = "Release card for client - testing metric aspect")
     @PostMapping("/client/{clientId}/product/cards")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Заявка на открытие карты успешно получена"),

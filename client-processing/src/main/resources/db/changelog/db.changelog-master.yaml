@@ -9,6 +9,8 @@ databaseChangeLog:
       file: classpath:/db/changelog/changeset/create_client_product.sql
   - include:
       file: classpath:/db/changelog/changeset/create_blacklist_registry.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_error_log.sql
   - changeSet:
       id: seed-client-processing
       author: ivakovv

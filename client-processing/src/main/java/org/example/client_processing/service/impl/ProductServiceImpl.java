@@ -1,6 +1,7 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.client_processing.annotation.Cached;
 import org.example.client_processing.dto.product.ProductRequest;
 import org.example.client_processing.dto.product.ProductResponse;
 import org.example.client_processing.exception.NotFoundException;
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toResponse(savedProduct);
     }
 
+    @Cached(description = "Cache product data by productId", ttlSeconds = 900)
     @Override
     public ProductResponse getByProductId(String productId) {
         Product product = productRepository.findByProductId(productId)
@@ -36,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toResponse(product);
     }
 
+    @Cached(description = "Cache all products list", ttlSeconds = 180)
     @Override
     public List<ProductResponse> getAll() {
         return productRepository.findAll().stream()
@@ -63,6 +66,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    @Cached(description = "Cache product entity by productId", ttlSeconds = 600)
     @Override
     public Product getProductByProductId(String productId) {
         return productRepository.findByProductId(productId)
