@@ -1,6 +1,7 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.client_processing.annotation.Cached;
 import org.example.client_processing.dto.client.ClientDto;
 import org.example.client_processing.dto.client.RegistrationRequest;
 import org.example.client_processing.dto.client.RegistrationResponse;
@@ -71,12 +72,14 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
+    @Cached(description = "Cache client data by clientId", ttlSeconds = 600)
     @Override
     public ClientDto getClientById(String clientId) {
         return clientMapper.toResponse(clientRepository.findByClientId(clientId)
                 .orElseThrow(() -> new NotFoundException("Client with id " + clientId + " not found")));
     }
 
+    @Cached(description = "Cache client entity by clientId", ttlSeconds = 300)
     @Override
     public Client getClientEntityById(String clientId) {
         return clientRepository.findByClientId(clientId)

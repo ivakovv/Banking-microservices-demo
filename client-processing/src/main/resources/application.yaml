@@ -56,7 +56,10 @@ client-processing:
     producer:
       enable: true
   metric:
-    execution-time-limit-ms: 1  
+    execution-time-limit-ms: 1
+  cache:
+    default-ttl-seconds: 300
+    cleanup-interval-seconds: 60  
 
 
 logging:
