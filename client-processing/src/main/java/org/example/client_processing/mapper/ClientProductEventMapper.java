@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 public interface ClientProductEventMapper {
     
     @Mapping(target = "clientProductId", source = "id")
-    @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "clientId", source = "client.clientId")
     @Mapping(target = "productId", source = "product.productId")
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "productType", source = "product.key")
@@ -19,7 +19,7 @@ public interface ClientProductEventMapper {
     ClientProductEventDto toCreatedEvent(ClientProduct clientProduct);
     
     @Mapping(target = "clientProductId", source = "id")
-    @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "clientId", source = "client.clientId")
     @Mapping(target = "productId", source = "product.productId")
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "productType", source = "product.key")
@@ -29,7 +29,7 @@ public interface ClientProductEventMapper {
     ClientProductEventDto toUpdatedEvent(ClientProduct clientProduct);
     
     @Mapping(target = "clientProductId", source = "id")
-    @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "clientId", source = "client.clientId")
     @Mapping(target = "productId", source = "product.productId")
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "productType", source = "product.key")

@@ -1,0 +1,3 @@
+org.example.starter.cache.CacheAutoConfiguration
+org.example.starter.observability.ObservabilityAutoConfiguration
+
