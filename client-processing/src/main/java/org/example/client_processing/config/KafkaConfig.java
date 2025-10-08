@@ -166,6 +166,7 @@ public class KafkaConfig {
     }
 
     @Bean("kafkaTemplate")
+    @Primary
     public KafkaTemplate<String, Object> kafkaTemplate() {
         Map<String, Object> configProps = new HashMap<>();
         

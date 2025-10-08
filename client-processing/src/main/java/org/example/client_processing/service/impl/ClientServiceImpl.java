@@ -1,7 +1,7 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.client_processing.annotation.Cached;
+import org.example.starter.cache.annotation.Cached;
 import org.example.client_processing.dto.client.ClientDto;
 import org.example.client_processing.dto.client.RegistrationRequest;
 import org.example.client_processing.dto.client.RegistrationResponse;

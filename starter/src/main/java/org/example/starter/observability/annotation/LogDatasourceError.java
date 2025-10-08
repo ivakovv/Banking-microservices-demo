@@ -1,4 +1,4 @@
-package org.example.client_processing.annotation;
+package org.example.starter.observability.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

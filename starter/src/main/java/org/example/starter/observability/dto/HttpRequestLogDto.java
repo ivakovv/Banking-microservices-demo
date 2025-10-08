@@ -1,11 +1,11 @@
-package org.example.client_processing.dto;
+package org.example.starter.observability.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MetricLogDto(
+public record HttpRequestLogDto(
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         LocalDateTime timestamp,
         
@@ -13,11 +13,15 @@ public record MetricLogDto(
         
         String methodSignature,
         
-        String type,
+        String httpMethod,
         
-        Long executionTimeMs,
+        String requestUri,
         
-        List<String> methodParameters,
+        List<String> requestParameters,
+        
+        String requestBody,
+        
+        String responseBody,
         
         String description
 ) {

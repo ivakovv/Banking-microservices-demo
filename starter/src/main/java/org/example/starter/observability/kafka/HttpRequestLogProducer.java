@@ -1,30 +1,32 @@
-package org.example.client_processing.kafka;
+package org.example.starter.observability.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.client_processing.dto.HttpRequestLogDto;
+import org.example.starter.observability.dto.HttpRequestLogDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-@Slf4j
 public class HttpRequestLogProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(HttpRequestLogProducer.class);
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.kafka.topics.service-logs}")
+    @Value("${spring.kafka.topics.service-logs:service_logs}")
     private String serviceLogsTopic;
 
     @Value("${spring.application.name}")
     private String serviceName;
+
+    public HttpRequestLogProducer(KafkaTemplate<String, Object> kafkaTemplate, ObjectMapper objectMapper) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     public boolean sendHttpRequestLog(HttpRequestLogDto httpRequestLogDto) {
         try {

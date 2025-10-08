@@ -57,9 +57,11 @@ client-processing:
       enable: true
   metric:
     execution-time-limit-ms: 1
-  cache:
-    default-ttl-seconds: 300
-    cleanup-interval-seconds: 60  
+
+caching:
+  enabled: true
+  default-ttl-seconds: 300
+  cleanup-interval-seconds: 60
 
 
 logging:

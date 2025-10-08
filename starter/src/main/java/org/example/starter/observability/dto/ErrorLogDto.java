@@ -1,7 +1,7 @@
-package org.example.client_processing.dto;
+package org.example.starter.observability.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.example.client_processing.annotation.LogDatasourceError;
+import org.example.starter.observability.annotation.LogDatasourceError;
 
 import java.time.LocalDateTime;
 import java.util.List;

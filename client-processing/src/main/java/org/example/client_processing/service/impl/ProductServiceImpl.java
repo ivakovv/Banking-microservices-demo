@@ -1,7 +1,7 @@
 package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.client_processing.annotation.Cached;
+import org.example.starter.cache.annotation.Cached;
 import org.example.client_processing.dto.product.ProductRequest;
 import org.example.client_processing.dto.product.ProductResponse;
 import org.example.client_processing.exception.NotFoundException;

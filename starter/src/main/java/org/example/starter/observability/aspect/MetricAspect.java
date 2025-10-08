@@ -1,17 +1,16 @@
-package org.example.client_processing.aspect;
+package org.example.starter.observability.aspect;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.example.client_processing.annotation.Metric;
-import org.example.client_processing.dto.MetricLogDto;
-import org.example.client_processing.kafka.ServiceLogProducer;
+import org.example.starter.observability.annotation.Metric;
+import org.example.starter.observability.dto.MetricLogDto;
+import org.example.starter.observability.kafka.MetricProducer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -28,20 +27,22 @@ import java.util.stream.Collectors;
  * в yaml файле
  */
 @Aspect
-@Component
-@RequiredArgsConstructor
-@Slf4j
 public class MetricAspect {
 
-    private final ServiceLogProducer serviceLogProducer;
+    private static final Logger log = LoggerFactory.getLogger(MetricAspect.class);
+    private final MetricProducer metricProducer;
 
     @Value("${spring.application.name}")
     private String serviceName;
 
-    @Value("${client-processing.metric.execution-time-limit-ms}")
+    @Value("${observability.metric.execution-time-limit-ms:1000}")
     private Long executionTimeLimitMs;
 
-    @Pointcut("@annotation(org.example.client_processing.annotation.Metric)")
+    public MetricAspect(MetricProducer metricProducer) {
+        this.metricProducer = metricProducer;
+    }
+
+    @Pointcut("@annotation(org.example.starter.observability.annotation.Metric)")
     public void metricAnnotatedMethods() {}
 
     @Around("metricAnnotatedMethods()")
@@ -92,7 +93,7 @@ public class MetricAspect {
             );
 
             try {
-                serviceLogProducer.sendMetricLog(metricLogDto);
+                metricProducer.sendMetricLog(metricLogDto);
             } catch (Exception kafkaException) {
                 log.warn("Failed to send metric log to Kafka: {}", kafkaException.getMessage());
             }

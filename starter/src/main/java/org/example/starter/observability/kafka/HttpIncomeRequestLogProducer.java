@@ -1,24 +1,26 @@
-package org.example.client_processing.kafka;
+package org.example.starter.observability.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.client_processing.dto.HttpIncomeRequestLogDto;
+import org.example.starter.observability.dto.HttpIncomeRequestLogDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component
-@RequiredArgsConstructor
-@Slf4j
 public class HttpIncomeRequestLogProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(HttpIncomeRequestLogProducer.class);
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
+
+    public HttpIncomeRequestLogProducer(KafkaTemplate<String, Object> kafkaTemplate, ObjectMapper objectMapper) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     @Value("${spring.kafka.topics.service-logs}")
     private String serviceLogsTopic;
@@ -29,31 +31,25 @@ public class HttpIncomeRequestLogProducer {
     public boolean sendHttpIncomeRequestLog(HttpIncomeRequestLogDto httpIncomeRequestLogDto) {
         try {
             String jsonMessage = objectMapper.writeValueAsString(httpIncomeRequestLogDto);
-            
-            Message<String> message = MessageBuilder
-                    .withPayload(jsonMessage)
+
+            Message<String> message = MessageBuilder.withPayload(jsonMessage)
                     .setHeader(KafkaHeaders.TOPIC, serviceLogsTopic)
-                    .setHeader(KafkaHeaders.KEY, serviceName)
-                    .setHeader("type", "INFO")
-                    .setHeader("value", "INFO")
+                    .setHeader("serviceName", serviceName)
                     .build();
 
-            kafkaTemplate.send(message).whenComplete((result, ex) -> {
-                if (ex != null) {
-                    log.error("Failed to send HTTP income request log to Kafka topic {}: {}", serviceLogsTopic, ex.getMessage());
-                } else {
-                    log.debug("Successfully sent HTTP income request log to Kafka topic {}", serviceLogsTopic);
-                }
-            });
-            
+            kafkaTemplate.send(message);
+            log.info("Kafka: Sent HTTP income request log to topic {}: {}", serviceLogsTopic, jsonMessage);
+
             return true;
-            
+
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize HTTP income request log to JSON: {}", e.getMessage());
+            log.error("Kafka: Failed to serialize HTTP income request log: {}", e.getMessage(), e);
             return false;
         } catch (Exception e) {
-            log.error("Failed to send HTTP income request log to Kafka: {}", e.getMessage());
+            log.error("Kafka: Failed to send HTTP income request log: {}", e.getMessage(), e);
             return false;
         }
     }
 }
+
+

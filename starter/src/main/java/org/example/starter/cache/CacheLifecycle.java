@@ -1,32 +1,33 @@
-package org.example.client_processing.config;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.client_processing.service.CacheService;
-import org.springframework.context.annotation.Configuration;
+package org.example.starter.cache;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Configuration
-@RequiredArgsConstructor
-@Slf4j
-public class CacheConfig {
+public class CacheLifecycle {
 
+    private static final Logger log = LoggerFactory.getLogger(CacheLifecycle.class);
     private final CacheService cacheService;
 
+    public CacheLifecycle(CacheService cacheService) {
+        this.cacheService = cacheService;
+    }
+
     @PostConstruct
-    public void initializeCache() {
+    public void start() {
         log.info("Initializing cache service");
         cacheService.startCleanupScheduler();
         log.info("Cache service initialized successfully");
     }
 
     @PreDestroy
-    public void shutdownCache() {
+    public void stop() {
         log.info("Shutting down cache service");
         cacheService.stopCleanupScheduler();
         cacheService.clear();
         log.info("Cache service shutdown completed");
     }
 }
+
+

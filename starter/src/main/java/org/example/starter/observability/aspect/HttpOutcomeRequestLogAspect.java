@@ -1,16 +1,15 @@
-package org.example.client_processing.aspect;
+package org.example.starter.observability.aspect;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.example.client_processing.annotation.HttpIncomeRequestLog;
-import org.example.client_processing.dto.HttpIncomeRequestLogDto;
-import org.example.client_processing.kafka.HttpIncomeRequestLogProducer;
+import org.example.starter.observability.annotation.HttpOutcomeRequestLog;
+import org.example.starter.observability.dto.HttpRequestLogDto;
+import org.example.starter.observability.kafka.HttpRequestLogProducer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -18,49 +17,62 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ivakov Andrey
+ * Аспект для логирования успешных HTTP-запросов
+ * 
+ * Обрабатывает методы, аннотированные @HttpOutcomeRequestLog:
+ * 1. Отправляет сообщение в Kafka топик service_logs
+ * 2. Логирует информацию о HTTP запросе с уровнем INFO
+ * 3. Включает URI, параметры, тело запроса и ответа
+ */
 @Aspect
-@Component
-@RequiredArgsConstructor
-@Slf4j
-public class HttpIncomeRequestLogAspect {
+public class HttpOutcomeRequestLogAspect {
 
-    private final HttpIncomeRequestLogProducer httpIncomeRequestLogProducer;
+    private static final Logger log = LoggerFactory.getLogger(HttpOutcomeRequestLogAspect.class);
+    private final HttpRequestLogProducer httpRequestLogProducer;
 
     @Value("${spring.application.name}")
     private String serviceName;
 
-    @Before("@annotation(httpIncomeRequestLog)")
-    public void logHttpIncome(JoinPoint joinPoint, HttpIncomeRequestLog httpIncomeRequestLog) {
+    public HttpOutcomeRequestLogAspect(HttpRequestLogProducer httpRequestLogProducer) {
+        this.httpRequestLogProducer = httpRequestLogProducer;
+    }
+
+    @AfterReturning(pointcut = "@annotation(httpOutcomeRequestLog)", returning = "result")
+    public void logHttpOutcome(JoinPoint joinPoint, HttpOutcomeRequestLog httpOutcomeRequestLog, Object result) {
         try {
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
             Method method = methodSignature.getMethod();
             String methodSignatureStr = buildMethodSignature(method);
             
             List<String> requestParameters = extractMethodParameters(joinPoint);
-            String requestUri = extractRequestUri(httpIncomeRequestLog, joinPoint);
+            String requestUri = extractRequestUri(httpOutcomeRequestLog, joinPoint);
             String requestBody = extractRequestBody(joinPoint);
+            String responseBody = extractResponseBody(result);
 
-            HttpIncomeRequestLogDto httpIncomeRequestLogDto = new HttpIncomeRequestLogDto(
+            HttpRequestLogDto httpRequestLogDto = new HttpRequestLogDto(
                     LocalDateTime.now(),
                     serviceName,
                     methodSignatureStr,
-                    httpIncomeRequestLog.httpMethod(),
+                    httpOutcomeRequestLog.httpMethod(),
                     requestUri,
                     requestParameters,
                     requestBody,
-                    httpIncomeRequestLog.description()
+                    responseBody,
+                    httpOutcomeRequestLog.description()
             );
 
             try {
-                httpIncomeRequestLogProducer.sendHttpIncomeRequestLog(httpIncomeRequestLogDto);
+                httpRequestLogProducer.sendHttpRequestLog(httpRequestLogDto);
             } catch (Exception kafkaException) {
-                log.warn("Failed to send HTTP income request log to Kafka: {}", kafkaException.getMessage());
+                log.warn("Failed to send HTTP request log to Kafka: {}", kafkaException.getMessage());
             }
 
-            logToConsole(httpIncomeRequestLogDto);
+            logToConsole(httpRequestLogDto);
 
         } catch (Exception aspectException) {
-            log.error("Error in HttpIncomeRequestLogAspect: {}", aspectException.getMessage(), aspectException);
+            log.error("Error in HttpOutcomeRequestLogAspect: {}", aspectException.getMessage(), aspectException);
         }
     }
 
@@ -92,7 +104,7 @@ public class HttpIncomeRequestLogAspect {
                 .collect(Collectors.toList());
     }
 
-    private String extractRequestUri(HttpIncomeRequestLog annotation, JoinPoint joinPoint) {
+    private String extractRequestUri(HttpOutcomeRequestLog annotation, JoinPoint joinPoint) {
         if (!annotation.uri().isEmpty()) {
             return annotation.uri();
         }
@@ -127,15 +139,21 @@ public class HttpIncomeRequestLogAspect {
         return "";
     }
 
-    private void logToConsole(HttpIncomeRequestLogDto httpIncomeRequestLogDto) {
+    private String extractResponseBody(Object result) {
+        if (result == null) return "null";
+        String resultStr = result.toString();
+        return resultStr.length() > 500 ? resultStr.substring(0, 500) + "..." : resultStr;
+    }
+
+    private void logToConsole(HttpRequestLogDto httpRequestLogDto) {
         String logMessage = String.format(
-                "HTTP INCOME REQUEST [INFO] %s %s in %s | Parameters: %s | Body: %s | Description: %s",
-                httpIncomeRequestLogDto.httpMethod(),
-                httpIncomeRequestLogDto.requestUri(),
-                httpIncomeRequestLogDto.methodSignature(),
-                httpIncomeRequestLogDto.requestParameters(),
-                httpIncomeRequestLogDto.requestBody(),
-                httpIncomeRequestLogDto.description()
+                "HTTP REQUEST [INFO] %s %s in %s | Parameters: %s | Response: %s | Description: %s",
+                httpRequestLogDto.httpMethod(),
+                httpRequestLogDto.requestUri(),
+                httpRequestLogDto.methodSignature(),
+                httpRequestLogDto.requestParameters(),
+                httpRequestLogDto.responseBody(),
+                httpRequestLogDto.description()
         );
 
         log.info(logMessage);
