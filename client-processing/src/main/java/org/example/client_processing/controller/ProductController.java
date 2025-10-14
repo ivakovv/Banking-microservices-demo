@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -28,9 +29,11 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
+    @PreAuthorize("hasRole('MASTER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Продукт успешно создан"),
             @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав для создания продукта"),
     })
     public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
         ProductResponse response = productService.create(request);
@@ -53,10 +56,12 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
+    @PreAuthorize("hasRole('MASTER') or hasRole('GRAND_EMPLOYEE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Продукт успешно обновлен"),
             @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
-            @ApiResponse(responseCode = "404", description = "Продукт не найден")
+            @ApiResponse(responseCode = "404", description = "Продукт не найден"),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав для редактирования продукта")
     })
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("productId") String productId,
@@ -66,9 +71,11 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
+    @PreAuthorize("hasRole('MASTER') or hasRole('GRAND_EMPLOYEE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Продукт успешно удален"),
-            @ApiResponse(responseCode = "404", description = "Продукт не найден")
+            @ApiResponse(responseCode = "404", description = "Продукт не найден"),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав для удаления продукта")
     })
     public ResponseEntity<Void> deleteProduct(@PathVariable("productId") String productId) {
         productService.delete(productId);

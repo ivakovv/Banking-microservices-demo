@@ -64,6 +64,11 @@ caching:
   cleanup-interval-seconds: 60
 
 
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
 logging:
   level:
     org.example.clientprocessing: DEBUG
