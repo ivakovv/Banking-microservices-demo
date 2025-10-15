@@ -3,6 +3,8 @@ databaseChangeLog:
       file: classpath:/db/changelog/changeset/create_product_registry.sql
   - include:
       file: classpath:/db/changelog/changeset/create_payment_registry.sql
+  - include:
+      file: classpath:/db/changelog/changeset/create_error_log.sql
   - changeSet:
       id: seed-credit-processing
       author: ivakovv

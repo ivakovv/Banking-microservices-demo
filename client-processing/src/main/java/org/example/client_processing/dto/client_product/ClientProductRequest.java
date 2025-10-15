@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 public record ClientProductRequest(
         LocalDateTime openDate,
         LocalDateTime closeDate,
-        Status status
+        Status status,
+        CreditInfoDto creditInfoDto
 ) {
     public ClientProductRequest {
         if (openDate == null) {

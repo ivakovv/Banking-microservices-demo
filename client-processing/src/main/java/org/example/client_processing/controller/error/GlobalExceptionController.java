@@ -7,6 +7,10 @@ import org.example.client_processing.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -62,6 +66,66 @@ public class GlobalExceptionController {
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Invalid request",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        log.warn("Authorization denied: {}", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.FORBIDDEN,
+                "Authorization Denied",
+                "You don't have the required role to perform this action"
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.FORBIDDEN,
+                "Access Denied",
+                "You don't have permission to access this resource"
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthentication(AuthenticationException ex) {
+        log.warn("Authentication failed: {}", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "Authentication Failed",
+                "Invalid credentials or token"
+        );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
+        log.warn("Bad credentials: {}", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "Bad Credentials",
+                "Invalid username or password"
+        );
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalState(IllegalStateException ex) {
+        if (ex.getMessage().contains("blocked")) {
+            log.warn("Blocked client attempted access: {}", ex.getMessage());
+            return buildErrorResponse(
+                    HttpStatus.FORBIDDEN,
+                    "Account Blocked",
+                    "Your account has been blocked. Please contact support for assistance."
+            );
+        }
+        
+        log.warn("Illegal state: {}", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Invalid State",
                 ex.getMessage()
         );
     }
