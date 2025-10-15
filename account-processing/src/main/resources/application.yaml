@@ -62,6 +62,10 @@ account-processing:
     consumer:
       enable: true
 
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
 logging:
   level:
     org.example.accountprocessing: DEBUG

@@ -36,6 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
+        
+        if (isServiceToken(jwt)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         username = jwtService.extractUsername(jwt);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -51,5 +57,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         filterChain.doFilter(request, response);
+    }
+    
+    private boolean isServiceToken(String token) {
+        try {
+            String tokenType = jwtService.extractClaim(token, claims -> claims.get("type", String.class));
+            return "service".equals(tokenType);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -72,6 +72,10 @@ credit-processing:
   max-interest-rate: 30.0
   min-interest-rate: 5.0
 
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
 logging:
   level:
     org.example.creditprocessing: DEBUG

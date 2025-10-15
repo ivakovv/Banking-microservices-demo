@@ -1,21 +1,21 @@
 package org.example.credit_processing.service.info;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.credit_processing.annotation.HttpOutcomeRequestLog;
-import org.example.credit_processing.annotation.LogDatasourceError;
+import org.example.starter.observability.annotation.HttpOutcomeRequestLog;
+import org.example.starter.observability.annotation.LogDatasourceError;
 import org.example.credit_processing.component.BaseHttpClient;
 import org.example.credit_processing.dto.ClientInfoDto;
+import org.example.starter.security.ServiceRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 public class ClientInfoService extends BaseHttpClient {
 
-    public ClientInfoService(RestTemplate restTemplate,
+    public ClientInfoService(ServiceRestClient serviceRestClient,
                              @Value("${credit-processing.client-service.url}") String clientServiceUrl) {
-        super(restTemplate, clientServiceUrl);
+        super(serviceRestClient, clientServiceUrl);
     }
 
     @LogDatasourceError(level = LogDatasourceError.LogLevel.ERROR, 

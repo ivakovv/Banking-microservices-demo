@@ -12,6 +12,7 @@ import org.example.client_processing.dto.client.RegistrationResponse;
 import org.example.client_processing.service.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,12 +43,12 @@ public class ClientController {
     }
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Клиент успешно создан"),
-            @ApiResponse(responseCode = "403", description = "Произошла ошибка при регистрации клиента"),
-            @ApiResponse(responseCode = "409", description = "Клиент уже существует"),
-            @ApiResponse(responseCode = "503", description = "Сервис не отвечает")
+            @ApiResponse(responseCode = "200", description = "Информация о клиенте успешно получена"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен - требуется межсервисная аутентификация"),
+            @ApiResponse(responseCode = "404", description = "Клиент не найден")
     })
     @GetMapping("/{clientId}")
+    @PreAuthorize("hasRole('SERVICE')")
     @HttpIncomeRequestLog(
         httpMethod = "GET", 
         uri = "/clients/{clientId}",

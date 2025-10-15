@@ -1,7 +1,6 @@
-package org.example.client_processing.config;
+package org.example.credit_processing.config;
 
-import org.example.client_processing.security.BlockedClientFilter;
-import org.example.client_processing.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.example.starter.security.ServiceJwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,19 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final BlockedClientFilter blockedClientFilter;
     private final ServiceJwtFilter serviceJwtFilter;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
-                         BlockedClientFilter blockedClientFilter,
-                         ServiceJwtFilter serviceJwtFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.blockedClientFilter = blockedClientFilter;
-        this.serviceJwtFilter = serviceJwtFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,17 +27,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/clients/register").permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
-                    .requestMatchers("/products/**").authenticated()
-                    .requestMatchers("/admin/**").authenticated()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(serviceJwtFilter, JwtAuthenticationFilter.class)
-            .addFilterAfter(blockedClientFilter, ServiceJwtFilter.class);
+            .addFilterBefore(serviceJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

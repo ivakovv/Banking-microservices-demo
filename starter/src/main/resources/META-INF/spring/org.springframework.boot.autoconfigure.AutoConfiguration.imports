@@ -1,3 +1,4 @@
 org.example.starter.cache.CacheAutoConfiguration
 org.example.starter.observability.ObservabilityAutoConfiguration
+org.example.starter.security.SecurityAutoConfiguration
 

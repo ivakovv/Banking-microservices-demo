@@ -3,17 +3,17 @@ package org.example.credit_processing.service.info;
 import lombok.extern.slf4j.Slf4j;
 import org.example.credit_processing.component.BaseHttpClient;
 import org.example.credit_processing.dto.AccountDto;
+import org.example.starter.security.ServiceRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 public class AccountInfoService extends BaseHttpClient {
 
-    public AccountInfoService(RestTemplate restTemplate,
-                              @Value("${credit-processing.account-service.url}") String clientServiceUrl) {
-        super(restTemplate, clientServiceUrl);
+    public AccountInfoService(ServiceRestClient serviceRestClient,
+                              @Value("${credit-processing.account-service.url}") String accountServiceUrl) {
+        super(serviceRestClient, accountServiceUrl);
     }
 
     public AccountDto getAccountByClientAndProductId(String clientId, String productId) {

@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.example.credit_processing.annotation.LogDatasourceError;
+import org.example.starter.observability.annotation.LogDatasourceError;
 
 import java.time.LocalDateTime;
 
