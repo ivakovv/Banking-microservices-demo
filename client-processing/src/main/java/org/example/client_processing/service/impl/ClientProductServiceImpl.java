@@ -2,21 +2,25 @@ package org.example.client_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.client_processing.dto.card.ClientCardEventDto;
+import org.example.client_processing.dto.client_product.ClientCreditProductEventDto;
 import org.example.client_processing.dto.client_product.ClientProductEventDto;
 import org.example.client_processing.dto.client_product.ClientProductRequest;
 import org.example.client_processing.dto.client_product.ClientProductResponse;
+import org.example.client_processing.dto.client_product.CreditInfoDto;
 import org.example.client_processing.dto.client_product.ReleaseCardRequest;
 import org.example.client_processing.dto.client_product.ReleaseCardResponse;
 import org.example.client_processing.exception.NotFoundException;
 import org.example.client_processing.kafka.ClientCardEventProducer;
 import org.example.client_processing.kafka.ClientProductEventProducer;
 import org.example.client_processing.mapper.CardMapper;
+import org.example.client_processing.mapper.ClientCreditProductEventMapper;
 import org.example.client_processing.mapper.ClientProductEventMapper;
 import org.example.client_processing.mapper.ClientProductMapper;
 import org.example.client_processing.model.Client;
 import org.example.client_processing.model.ClientProduct;
 import org.example.client_processing.model.Product;
 import org.example.client_processing.repository.ClientProductRepository;
+import org.example.client_processing.service.BusinessMetricsService;
 import org.example.client_processing.service.ClientProductService;
 import org.example.client_processing.service.ClientService;
 import org.example.client_processing.service.ProductService;
@@ -37,6 +41,8 @@ public class ClientProductServiceImpl implements ClientProductService {
     private final ClientProductEventProducer clientProductEventProducer;
     private final ClientCardEventProducer clientCardEventProducer;
     private final CardMapper cardMapper;
+    private final ClientCreditProductEventMapper clientCreditProductEventMapper;
+    private final BusinessMetricsService businessMetricsService;
 
     @Transactional
     @Override
@@ -59,8 +65,9 @@ public class ClientProductServiceImpl implements ClientProductService {
 
         ClientProduct savedClientProduct = clientProductRepository.save(clientProduct);
 
-        ClientProductEventDto event = clientProductEventMapper.toCreatedEvent(savedClientProduct);
-        clientProductEventProducer.sendClientProductEvent(event);
+        businessMetricsService.recordProductOpened(product.getKey());
+
+        sendProductEvent(savedClientProduct, "CREATED", request);
 
         return clientProductMapper.toResponse(savedClientProduct);
     }
@@ -81,7 +88,7 @@ public class ClientProductServiceImpl implements ClientProductService {
 
     @Override
     public List<ClientProductResponse> getByClientIdAndProductType(String clientId, String productType) {
-        return clientProductRepository.findByClientClientIdAndProductKey(clientId, 
+        return clientProductRepository.findByClientClientIdAndProductKey(clientId,
                 org.example.client_processing.enums.product.Key.valueOf(productType)).stream()
                 .map(clientProductMapper::toResponse)
                 .toList();
@@ -93,14 +100,18 @@ public class ClientProductServiceImpl implements ClientProductService {
         ClientProduct existingClientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
                 .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
 
+        var oldStatus = existingClientProduct.getStatus();
+        var newStatus = request.status();
+        
         existingClientProduct.setOpenDate(request.openDate());
         existingClientProduct.setCloseDate(request.closeDate());
-        existingClientProduct.setStatus(request.status());
+        existingClientProduct.setStatus(newStatus);
 
         ClientProduct updatedClientProduct = clientProductRepository.save(existingClientProduct);
 
-        ClientProductEventDto event = clientProductEventMapper.toUpdatedEvent(updatedClientProduct);
-        clientProductEventProducer.sendClientProductEvent(event);
+        updateProductMetrics(existingClientProduct.getProduct().getKey(), oldStatus, newStatus);
+
+        sendProductEvent(updatedClientProduct, "UPDATED", request);
 
         return clientProductMapper.toResponse(updatedClientProduct);
     }
@@ -111,10 +122,9 @@ public class ClientProductServiceImpl implements ClientProductService {
         ClientProduct clientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
                 .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
 
-        ClientProductEventDto event = clientProductEventMapper.toDeletedEvent(clientProduct);
-        clientProductEventProducer.sendClientProductEvent(event);
-
         clientProductRepository.delete(clientProduct);
+
+        sendProductEvent(clientProduct, "UPDATED", null);
     }
 
     @Override
@@ -126,5 +136,53 @@ public class ClientProductServiceImpl implements ClientProductService {
         clientCardEventProducer.sendCardCreationRequest(cardEvent);
 
         return cardMapper.toResponse("Заявка на создание карты принята в обработку");
+    }
+
+    private void sendProductEvent(ClientProduct clientProduct, String eventType, ClientProductRequest request) {
+        String productType = clientProduct.getProduct().getKey().name();
+
+        ClientProductEventDto event = switch (eventType) {
+            case "CREATED" -> clientProductEventMapper.toCreatedEvent(clientProduct);
+            case "UPDATED" -> clientProductEventMapper.toUpdatedEvent(clientProduct);
+            case "DELETED" -> clientProductEventMapper.toDeletedEvent(clientProduct);
+            default -> throw new IllegalArgumentException("Unknown event type: " + eventType);
+        };
+        clientProductEventProducer.sendClientProductEvent(event);
+
+        if (isCreditProduct(productType)) {
+            CreditInfoDto creditInfo = request.creditInfoDto();
+            ClientCreditProductEventDto creditEvent = switch (eventType) {
+                case "CREATED" -> clientCreditProductEventMapper.toCreatedEvent(clientProduct, creditInfo);
+                case "UPDATED" -> clientCreditProductEventMapper.toUpdatedEvent(clientProduct, creditInfo);
+                case "DELETED" -> clientCreditProductEventMapper.toDeletedEvent(clientProduct, creditInfo);
+                default -> throw new IllegalArgumentException("Unknown event type: " + eventType);
+            };
+            clientProductEventProducer.sendCreditProductEvent(creditEvent);
+        }
+    }
+
+    private boolean isCreditProduct(String productType) {
+        return "IPO".equals(productType) || "PC".equals(productType) || "AC".equals(productType);
+    }
+
+
+    private void updateProductMetrics(org.example.client_processing.enums.product.Key productKey, 
+                                    org.example.client_processing.enums.client_product.Status oldStatus, 
+                                    org.example.client_processing.enums.client_product.Status newStatus) {
+        
+        if (oldStatus == newStatus) {
+            return;
+        }
+
+        switch (newStatus) {
+            case ACTIVE -> {
+                if (oldStatus == org.example.client_processing.enums.client_product.Status.BLOCKED) {
+                    businessMetricsService.recordProductUnblocked(productKey);
+                }
+            }
+            case CLOSED -> businessMetricsService.recordProductClosed(productKey);
+            case BLOCKED -> businessMetricsService.recordProductBlocked(productKey);
+            case ARRESTED -> businessMetricsService.recordProductBlocked(productKey);
+        }
     }
 }

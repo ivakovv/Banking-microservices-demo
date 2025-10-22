@@ -50,6 +50,9 @@ public class Payment {
     @Column(name = "payed_at")
     private LocalDateTime payedAt;
 
+    @Column(name = "expired", nullable = false)
+    private Boolean expired = false;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Type type;

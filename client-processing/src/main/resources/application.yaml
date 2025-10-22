@@ -28,6 +28,7 @@ spring:
       client-products: client_products
       client-credit-products: client_credit_products
       client-cards: client_cards
+      service-logs: service_logs
     bootstrap-servers: localhost:9092
     consumer:
       group-id: client-processing-group
@@ -54,9 +55,39 @@ client-processing:
   kafka:
     producer:
       enable: true
+  metric:
+    execution-time-limit-ms: 1
+
+caching:
+  enabled: true
+  default-ttl-seconds: 300
+  cleanup-interval-seconds: 60
+
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 logging:
   level:
     org.example.clientprocessing: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE

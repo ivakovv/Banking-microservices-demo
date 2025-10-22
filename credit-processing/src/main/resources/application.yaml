@@ -23,9 +23,78 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
+  kafka:
+    topics:
+      client-credit-products: client_credit_products
+      client-credit-products-dlq: client_credit_products_dlq
+      service-logs: service_logs
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: credit-processing-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+      listener:
+        ack-mode: manual_immediate
+        concurrency: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+          backoff:
+            initial-interval: 1000
+            max-interval: 10000
+            multiplier: 2.0
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 3
+      acks: all
+      enable-idempotence: true
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      retry-backoff-ms: 1000
+      compression-type: snappy
+
+credit-processing:
+  client-service:
+    url: http://localhost:8081/client-processing/api/v1
+  account-service:
+    url: http://localhost:8082/account-processing/api/v1
+  credit-limit: 100000000
+  allow-overdue: false
+  max-loan-term-months: 60
+  min-loan-term-months: 1
+  max-interest-rate: 30.0
+  min-interest-rate: 5.0
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 
 logging:
   level:
     org.example.creditprocessing: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE

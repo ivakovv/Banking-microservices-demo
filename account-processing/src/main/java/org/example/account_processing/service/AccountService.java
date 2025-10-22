@@ -1,5 +1,6 @@
 package org.example.account_processing.service;
 
+import org.example.account_processing.dto.account.AccountDto;
 import org.example.account_processing.model.Account;
 
 /**
@@ -40,4 +41,26 @@ public interface AccountService {
      * @see Account
      */
     Account saveAccount(Account account);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод для получения счета продукта</b> </i>
+     * </p>
+     * @param productId идентификатор продукта
+     * @return счет в dto
+     * @see AccountDto
+     */
+    AccountDto getAccountByClientAndProductId(String ClientId, String productId);
+
+    /**
+     * @author Ivakov Andrey
+     * <p>
+     *     <i> <b> Метод проверяет счет на блокировку оперций </b> </i>
+     * </p>
+     * @param account счет для проверки
+     * @return булево значение
+     */
+    boolean isAccountActive(Account account);
+
 }

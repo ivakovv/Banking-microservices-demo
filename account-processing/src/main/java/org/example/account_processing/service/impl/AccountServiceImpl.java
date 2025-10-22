@@ -2,6 +2,9 @@ package org.example.account_processing.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.account_processing.dto.account.AccountDto;
+import org.example.account_processing.enums.Status;
+import org.example.account_processing.mapper.AccountMapper;
 import org.example.account_processing.model.Account;
 import org.example.account_processing.repository.AccountRepository;
 import org.example.account_processing.service.AccountService;
@@ -14,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+
+    private final AccountMapper accountMapper;
 
     @Override
     @Transactional
@@ -47,4 +52,22 @@ public class AccountServiceImpl implements AccountService {
     public Account saveAccount(Account account) {
         return accountRepository.save(account);
     }
+
+    @Override
+    public AccountDto getAccountByClientAndProductId(String clientId, String productId) {
+        Account account = accountRepository.findByClientIdAndProductId(
+                clientId, productId);
+        if (account == null){
+            throw new IllegalArgumentException(
+                    String.format("Account not found for clientId %s with product %s", clientId, productId));
+        }
+        return accountMapper.toDto(account);
+    }
+
+    @Override
+    public boolean isAccountActive(Account account){
+        return account.getStatus() != Status.CLOSED
+                && account.getStatus() != Status.ARRESTED && account.getStatus() != Status.FROZEN;
+    }
+
 }

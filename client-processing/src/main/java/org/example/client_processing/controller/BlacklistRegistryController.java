@@ -10,6 +10,7 @@ import org.example.client_processing.enums.client.DocumentType;
 import org.example.client_processing.service.BlacklistRegistryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class BlacklistRegistryController {
     private final BlacklistRegistryService blacklistRegistryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('MASTER') or hasRole('GRAND_EMPLOYEE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Документ успешно добавлен в черный список"),
             @ApiResponse(responseCode = "400", description = "Неверные данные запроса"),
@@ -38,6 +40,7 @@ public class BlacklistRegistryController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('MASTER') or hasRole('GRAND_EMPLOYEE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Документ успешно удален из черного списка"),
             @ApiResponse(responseCode = "404", description = "Документ, не найденный в черном списке")
@@ -48,6 +51,7 @@ public class BlacklistRegistryController {
     }
 
     @PutMapping("/expiration")
+    @PreAuthorize("hasRole('MASTER') or hasRole('GRAND_EMPLOYEE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Дата истечения срока действия успешно обновлена"),
             @ApiResponse(responseCode = "404", description = "Документ, не найденный в черном списке")
