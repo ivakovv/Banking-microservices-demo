@@ -20,6 +20,7 @@ import org.example.client_processing.model.Client;
 import org.example.client_processing.model.ClientProduct;
 import org.example.client_processing.model.Product;
 import org.example.client_processing.repository.ClientProductRepository;
+import org.example.client_processing.service.BusinessMetricsService;
 import org.example.client_processing.service.ClientProductService;
 import org.example.client_processing.service.ClientService;
 import org.example.client_processing.service.ProductService;
@@ -41,6 +42,7 @@ public class ClientProductServiceImpl implements ClientProductService {
     private final ClientCardEventProducer clientCardEventProducer;
     private final CardMapper cardMapper;
     private final ClientCreditProductEventMapper clientCreditProductEventMapper;
+    private final BusinessMetricsService businessMetricsService;
 
     @Transactional
     @Override
@@ -62,6 +64,8 @@ public class ClientProductServiceImpl implements ClientProductService {
         ClientProduct clientProduct = clientProductMapper.toEntity(request, client, product);
 
         ClientProduct savedClientProduct = clientProductRepository.save(clientProduct);
+
+        businessMetricsService.recordProductOpened(product.getKey());
 
         sendProductEvent(savedClientProduct, "CREATED", request);
 
@@ -96,11 +100,16 @@ public class ClientProductServiceImpl implements ClientProductService {
         ClientProduct existingClientProduct = clientProductRepository.findByClientClientIdAndProductProductId(clientId, productId)
                 .orElseThrow(() -> new NotFoundException("ClientProduct with clientId " + clientId + " and productId " + productId + " not found"));
 
+        var oldStatus = existingClientProduct.getStatus();
+        var newStatus = request.status();
+        
         existingClientProduct.setOpenDate(request.openDate());
         existingClientProduct.setCloseDate(request.closeDate());
-        existingClientProduct.setStatus(request.status());
+        existingClientProduct.setStatus(newStatus);
 
         ClientProduct updatedClientProduct = clientProductRepository.save(existingClientProduct);
+
+        updateProductMetrics(existingClientProduct.getProduct().getKey(), oldStatus, newStatus);
 
         sendProductEvent(updatedClientProduct, "UPDATED", request);
 
@@ -154,5 +163,26 @@ public class ClientProductServiceImpl implements ClientProductService {
 
     private boolean isCreditProduct(String productType) {
         return "IPO".equals(productType) || "PC".equals(productType) || "AC".equals(productType);
+    }
+
+
+    private void updateProductMetrics(org.example.client_processing.enums.product.Key productKey, 
+                                    org.example.client_processing.enums.client_product.Status oldStatus, 
+                                    org.example.client_processing.enums.client_product.Status newStatus) {
+        
+        if (oldStatus == newStatus) {
+            return;
+        }
+
+        switch (newStatus) {
+            case ACTIVE -> {
+                if (oldStatus == org.example.client_processing.enums.client_product.Status.BLOCKED) {
+                    businessMetricsService.recordProductUnblocked(productKey);
+                }
+            }
+            case CLOSED -> businessMetricsService.recordProductClosed(productKey);
+            case BLOCKED -> businessMetricsService.recordProductBlocked(productKey);
+            case ARRESTED -> businessMetricsService.recordProductBlocked(productKey);
+        }
     }
 }
